@@ -7,19 +7,37 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Expense',
+            name="Expense",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('montant', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('category', models.CharField(choices=[('food', 'Nourriture'), ('transport', 'Transport'), ('health', 'Santé'), ('other', 'Autre')], max_length=50)),
-                ('description', models.TextField(blank=True)),
-                ('date', models.DateField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("montant", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "category",
+                    models.CharField(
+                        choices=[
+                            ("food", "Nourriture"),
+                            ("transport", "Transport"),
+                            ("health", "Santé"),
+                            ("other", "Autre"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                ("description", models.TextField(blank=True)),
+                ("date", models.DateField(auto_now_add=True)),
             ],
         ),
     ]

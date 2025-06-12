@@ -3,6 +3,7 @@ import { FaSave } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 
 const categories = [
   { value: 'food', label: 'Nourriture' },
@@ -10,7 +11,6 @@ const categories = [
   { value: 'health', label: 'Santé' },
   { value: 'other', label: 'Autre' },
 ];
-
 
 export default function Depense() {
   const [form, setForm] = useState({
@@ -23,13 +23,15 @@ export default function Depense() {
 
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setForm(prev => ({
       ...prev,
       [name]: name === 'montant' ? parseFloat(value) || 0 : value,
     }));
-  }; 
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,19 +46,19 @@ export default function Depense() {
         description: '',
         date: new Date().toISOString().split('T')[0],
       });
-      alert('Dépense enregistrée avec succès !');
-      navigate('/depenses/lists');
+      toast.success('✅ Dépense enregistrée avec succès !');
+      setTimeout(() => navigate('/depenses/lists'), 2000);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        if (error.response && error.response.data) {
-          alert('Erreur lors de la soumission : ' + JSON.stringify(error.response.data));
+        if (error.response?.data) {
+          toast.error('❌ Erreur : ' + JSON.stringify(error.response.data));
         } else {
-          alert('Erreur réseau : ' + error.message);
+          toast.error('❌ Erreur réseau : ' + error.message);
         }
       } else if (error instanceof Error) {
-        alert('Erreur : ' + error.message);
+        toast.error('❌ Erreur : ' + error.message);
       } else {
-        alert('Erreur inconnue');
+        toast.error('❌ Erreur inconnue');
       }
     }
   };
@@ -68,6 +70,7 @@ export default function Depense() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      <Toaster position="top-right" />
       <motion.form
         onSubmit={handleSubmit}
         className="bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-md space-y-4 border border-green-200 w-full max-w-sm"

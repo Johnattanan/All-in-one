@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { FaSave as SaveIcon } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { toast, Toaster } from 'react-hot-toast';
 
 const buttonHover = {
   scale: 1.05,
@@ -31,19 +32,19 @@ export default function Notes() {
       });
       setForm({ title: '', content: '' });
       setEditing(false);
-      alert('La note a été ajoutée avec succès !');
+      toast.success('✅ Note ajoutée avec succès !');
       navigate('/notes/lists');
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        if (error.response && error.response.data) {
-          alert('Erreur lors de la soumission : ' + JSON.stringify(error.response.data));
+        if (error.response?.data) {
+          toast.error('❌ Erreur API : ' + JSON.stringify(error.response.data));
         } else {
-          alert('Erreur réseau : ' + error.message);
+          toast.error('❌ Erreur réseau : ' + error.message);
         }
       } else if (error instanceof Error) {
-        alert('Erreur : ' + error.message);
+        toast.error('❌ Erreur : ' + error.message);
       } else {
-        alert('Erreur inconnue');
+        toast.error('❌ Erreur inconnue');
       }
     }
   };
@@ -55,6 +56,8 @@ export default function Notes() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+
       <motion.h1
         className="text-3xl font-bold text-yellow-700 mb-8 text-center select-none"
         initial={{ y: -50 }}
@@ -99,7 +102,9 @@ export default function Notes() {
               <SaveIcon className="inline" /> Mettre à jour
             </>
           ) : (
-            'Ajouter la note'
+            <>
+              <SaveIcon className="inline" /> Ajouter la note
+            </>
           )}
         </motion.button>
       </motion.form>

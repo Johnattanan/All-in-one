@@ -1,6 +1,9 @@
+from django.contrib.auth.models import User
 from django.db import models
 
+
 class Todo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="todos")
     title = models.CharField(max_length=200)
     description = models.TextField()
     date_for = models.DateField(null=True, blank=True)

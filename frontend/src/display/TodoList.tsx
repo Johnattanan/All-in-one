@@ -33,16 +33,21 @@ export default function TodoList() {
   const navigate = useNavigate();
 
   const fetchTodos = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get('http://localhost:8000/api/todos/');
-      const data = Array.isArray(res.data) ? res.data : res.data.results || [];
-      setTodos(data);
-    } catch {
-      setTodos([]);
-    }
-    setLoading(false);
-  };
+  setLoading(true);
+  try {
+    const token = localStorage.getItem('access');
+    const res = await axios.get('http://localhost:8000/api/todos/', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const data = Array.isArray(res.data) ? res.data : res.data.results || [];
+    setTodos(data);
+  } catch {
+    setTodos([]);
+  }
+  setLoading(false);
+};
 
   useEffect(() => {
     fetchTodos();

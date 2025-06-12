@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaSave } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import toast from 'react-hot-toast';  // <-- Import toast
 
 const categories = [
   { value: 'food', label: 'Nourriture' },
@@ -45,15 +46,15 @@ export default function DepenseEdit() {
       await axios.put(`http://localhost:8000/api/depenses/${id}/`, form, {
         headers: { 'Content-Type': 'application/json' },
       });
-      alert('Dépense modifiée avec succès !');
+      toast.success('Dépense modifiée avec succès !');  // <-- toast success
       navigate('/depenses/lists');
     } catch (error) {
       if (error.response && error.response.data) {
-        alert('Erreur lors de la modification : ' + JSON.stringify(error.response.data));
+        toast.error('Erreur lors de la modification : ' + JSON.stringify(error.response.data));  // <-- toast error
       } else if (error instanceof Error) {
-        alert('Erreur : ' + error.message);
+        toast.error('Erreur : ' + error.message);  // <-- toast error
       } else {
-        alert('Erreur inconnue');
+        toast.error('Erreur inconnue');  // <-- toast error
       }
     }
   };

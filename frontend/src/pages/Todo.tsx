@@ -3,6 +3,7 @@ import { FaSave as SaveIcon } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 type TodoForm = {
   title: string;
@@ -20,6 +21,7 @@ export default function Todo() {
     time_for: '',
     completed: false,
   });
+
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -34,31 +36,41 @@ export default function Todo() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted:', form);
+    const loadingToast = toast.loading('Envoi en cours...');
+
     try {
       await axios.post('http://localhost:8000/api/todos/', form, {
-        headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access')}` // Ajoute cette ligne
+      },
       });
 
+      toast.success('✅ Tâche enregistrée avec succès !', { id: loadingToast });
+
       setForm({ title: '', description: '', date_for: '', time_for: '', completed: false });
-      alert('Les données ont été soumises avec succès !');
-      navigate('/todos/lists');
+
+      setTimeout(() => {
+        navigate('/todos/lists');
+      }, 1000);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response && error.response.data) {
-          alert('Erreur lors de la soumission : ' + JSON.stringify(error.response.data));
+          toast.error('❌ Erreur API : ' + JSON.stringify(error.response.data), { id: loadingToast });
         } else {
-          alert('Erreur réseau : ' + error.message);
+          toast.error('📡 Problème réseau : ' + error.message, { id: loadingToast });
         }
       } else if (error instanceof Error) {
-        alert('Erreur : ' + error.message);
+        toast.error('❗ Erreur : ' + error.message, { id: loadingToast });
       } else {
-        alert('Erreur inconnue');
+        toast.error('🚨 Erreur inconnue', { id: loadingToast });
       }
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen bg-gradient-to-b from-blue-50 via-blue-100 to-blue-200 flex flex-col items-center justify-center p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -79,6 +91,7 @@ export default function Todo() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
+        {/* Champ titre */}
         <div className="flex flex-col">
           <label className="text-indigo-500 font-semibold mb-1 text-sm">Titre</label>
           <input
@@ -92,6 +105,7 @@ export default function Todo() {
           />
         </div>
 
+        {/* Champ description */}
         <div className="flex flex-col">
           <label className="text-indigo-500 font-semibold mb-1 text-sm">Description</label>
           <textarea
@@ -104,6 +118,7 @@ export default function Todo() {
           />
         </div>
 
+        {/* Champ date + heure */}
         <div className="flex gap-2">
           <div className="flex flex-col flex-1">
             <label className="text-indigo-500 font-semibold mb-1 text-sm">Date</label>
@@ -128,6 +143,7 @@ export default function Todo() {
           </div>
         </div>
 
+        {/* Checkbox */}
         <label className="inline-flex items-center gap-2 text-blue-700 text-sm">
           <input
             type="checkbox"
@@ -139,6 +155,7 @@ export default function Todo() {
           Terminer
         </label>
 
+        {/* Bouton */}
         <motion.button
           type="submit"
           whileHover={{ scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 10 } }}

@@ -49,7 +49,7 @@ export default function DepenseList() {
       await axios.delete(`http://localhost:8000/api/depenses/${id}/`);
       setDepenses(depenses => depenses.filter(dep => dep.id !== id));
     }
-  };
+  }; 
 
   const handleEdit = (id: number) => {
     navigate(`/depenses/${id}`);
